@@ -81,7 +81,15 @@ namespace DBCreator
 					{
 						foreach (string n in DatabaseObjects[i].Keys)
 						{
-							FileLines.Add(Stringify(0x01) + n + Stringify(0x00) + DatabaseObjects[i][n].ToString());
+							Console.WriteLine(DatabaseObjects[i][n].GetObjectType().ToString());
+							if (DatabaseObjects[i][n].GetObjectType().ToString() == "DBOA")
+							{
+
+							}
+							else
+							{
+								FileLines.Add(Stringify(0x01) + n + Stringify(0x00) + DatabaseObjects[i][n].ToString());
+							}
 						}
 					}
 				}
@@ -190,6 +198,56 @@ namespace DBCreator
 					DatabaseObjects[table][identifier].Set(value);
 				else
 					DatabaseObjects[table].Add(identifier, new DatabaseObject(value));
+			}
+			else
+			{
+				throw new MissingTableException();
+			}
+		}
+		/*
+		/// <summary>
+		/// Sets a value within a certain table, and auto-creates the identifier if it doesn't exist already.
+		/// </summary>
+		/// <param name="table">The table</param>
+		/// <param name="identifier">The identifier</param>
+		/// <param name="value">The value</param>
+		/// <param name="valueAssembly">The assembly the object was made in. This allows for custom object re-creation.</param>
+		public void Set(string table, string identifier, object value, string valueAssembly)
+		{
+			if (valueAssembly.Contains(Stringify(0x00)))
+				throw new BannedCharecterException("valueAssembly, " + valueAssembly);
+
+			if (DatabaseObjects.ContainsKey(table))
+			{
+				if (DatabaseObjects[table].ContainsKey(identifier))
+					DatabaseObjects[table][identifier].Set(value, valueAssembly);
+				else
+					DatabaseObjects[table].Add(identifier, new DatabaseObject(value));
+			}
+			else
+			{
+				throw new MissingTableException();
+			}
+		}*/
+
+		/// <summary>
+		/// Sets a value to an array, and auto-creates the identifier if it doesn't exist already.
+		/// </summary>
+		/// <param name="table">The table</param>
+		/// <param name="identifier">The identifier</param>
+		/// <param name="array">The array</param>
+		public void SetArray(string table, string identifier, DatabaseObjectArray array)
+		{
+			if (DatabaseObjects.ContainsKey(table))
+			{
+				if (DatabaseObjects[table].ContainsKey(identifier))
+					DatabaseObjects[table][identifier].SetArray(array);
+				else
+					DatabaseObjects[table].Add(identifier, new DatabaseObject(array));
+			}
+			else
+			{
+				throw new MissingTableException();
 			}
 		}
 	}

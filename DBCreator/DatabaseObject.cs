@@ -13,6 +13,7 @@ namespace DBCreator
 
 		/// <summary>The type of the database object</summary>
 		private Type thisType;
+		private string thisTypeAssembly = "";
 		/// <summary>The value of the database object</summary>
 		private object value;
 
@@ -22,8 +23,17 @@ namespace DBCreator
 		/// <param name="Value">The value of the DatabaseObject</param>
 		public DatabaseObject(object Value)
 		{
+			if (Value.ToString().Contains(Stringify(0x00)))
+				throw new BannedCharecterException("Value, " + Value.ToString());
+
 			thisType = Value.GetType();
 			value = Value;
+		}
+
+		public DatabaseObject(DatabaseObjectArray Array)
+		{
+			thisType = Array.GetType();
+			value = Array;
 		}
 
 		/// <summary>
@@ -79,6 +89,20 @@ namespace DBCreator
 		/// <param name="Value">The value</param>
 		public void Set(object Value)
 		{
+			if (Value.ToString().Contains(Stringify(0x00)))
+				throw new BannedCharecterException("Value, " + Value.ToString());
+
+			thisType = Value.GetType();
+			value = Value;
+			thisTypeAssembly = "";
+		}
+
+		/// <summary>
+		/// Sets the value of the database object.
+		/// </summary>
+		/// <param name="Value">The value</param>
+		public void SetArray(DatabaseObjectArray Value)
+		{
 			thisType = Value.GetType();
 			value = Value;
 		}
@@ -90,6 +114,12 @@ namespace DBCreator
 		public override string ToString()
 		{
 			return thisType.ToString() + Stringify(0x00) + value.ToString();
+		}
+
+		public void Set(object value, Type valueAssembly)
+		{
+			Set(value);
+			thisType = valueAssembly;
 		}
 	}
 }

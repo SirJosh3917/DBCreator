@@ -24,17 +24,27 @@ namespace ExampleProject
 				Console.WriteLine(d.Get("example", "derp2"));
 				Console.WriteLine(d.Get("example", "derp3"));
 				Console.WriteLine(d.Get("example", "derp4"));
+				Console.WriteLine(d.Get("example", ""));
 			}
 			catch (MissingTableException e)
 			{
 				Console.WriteLine("Table's missing");
 				d.CreateTable("example");
+			} catch (MissingIdentifierException e)
+			{
+				Console.WriteLine("Identifier's missing");
 			}
 			//Set some values
 			d.Set("example", "derp1", true);
 			d.Set("example", "derp2", 1);
 			d.Set("example", "derp3", "false");
 			d.Set("example", "derp4", float.MaxValue);
+			d.SetArray("example", "", new DatabaseObjectArray(new DatabaseObject[]{
+			new DatabaseObject(false),
+			new DatabaseObject(4),
+			new DatabaseObject('a'),
+			new DatabaseObject(byte.MinValue)
+			}));
 
 			//Save this to a file
 			d.Save();

@@ -38,6 +38,7 @@
   <ItemGroup>
     <Compile Include="DatabaseObject.cs" />
     <Compile Include="Database.cs" />
+    <Compile Include="DatabaseObjectArray.cs" />
     <Compile Include="Exceptions\BannedCharecterException.cs" />
     <Compile Include="Exceptions\MissingIdentifierException.cs" />
     <Compile Include="Exceptions\MissingTableException.cs" />
