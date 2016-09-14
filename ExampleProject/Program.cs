@@ -12,7 +12,7 @@ namespace ExampleProject
 		static void Main(string[] args)
 		{
 			//This should on first run, create a database, say "Table's missing", and then exit.
-			//On the second run, it should say 'false'.
+			//On the second run, it should say all of the values it was storing.
 
 			//Create a new database
 			Database d = new Database("IMTHEBEST");
@@ -25,18 +25,11 @@ namespace ExampleProject
 				Console.WriteLine(d.Get("example", "derp3"));
 				Console.WriteLine(d.Get("example", "derp4"));
 			}
-			catch (MissingTable e)
+			catch (MissingTableException e)
 			{
 				Console.WriteLine("Table's missing");
+				d.CreateTable("example");
 			}
-			catch (MissingIdentifier e)
-			{
-				Console.WriteLine("Identifier's missing.");
-			}
-
-			//Create a table
-			d.CreateTable("example");
-
 			//Set some values
 			d.Set("example", "derp1", true);
 			d.Set("example", "derp2", 1);

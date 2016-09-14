@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace DBCreator
 {
@@ -11,6 +9,8 @@ namespace DBCreator
 	/// </summary>
 	public class DatabaseObject
 	{
+		private string Stringify(byte b) { return Convert.ToChar(Convert.ToByte(b)).ToString(); }
+
 		/// <summary>The type of the database object</summary>
 		private Type thisType;
 		/// <summary>The value of the database object</summary>
@@ -30,7 +30,7 @@ namespace DBCreator
 		/// Gets the type of the database object within the database object
 		/// </summary>
 		/// <returns>The type of the database object within the database object</returns>
-		public Type GetType() { return thisType; }
+		public Type GetObjectType() { return thisType; }
 
 		/// <summary>
 		/// Gets the value of the database object within the database object
@@ -89,7 +89,7 @@ namespace DBCreator
 		/// <returns>What the value would be like stored in the database</returns>
 		public override string ToString()
 		{
-			return thisType.ToString() + ":" + value.ToString();
+			return thisType.ToString() + Stringify(0x00) + value.ToString();
 		}
 	}
 }

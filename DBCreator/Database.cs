@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace DBCreator
 {
@@ -12,6 +10,8 @@ namespace DBCreator
 	/// </summary>
     public class Database
     {
+		private string Stringify(byte b) { return Convert.ToChar(Convert.ToByte(b)).ToString(); }
+
 		private string DatabaseN = "";
 		Dictionary<string, Dictionary<string, DatabaseObject>> DatabaseObjects = new Dictionary<string, Dictionary<string, DatabaseObject>>();
 
@@ -27,25 +27,29 @@ namespace DBCreator
 			{
 				string RecentlyMentionedTable = "";
 
+				string[] Db = File.ReadAllLines(Environment.ExpandEnvironmentVariables("%locallow%\\DBC\\" + DatabaseName + ".dbc"));
+
 				//Load the database
-				foreach(string i in File.ReadAllLines(Environment.ExpandEnvironmentVariables("%locallow%\\DBC\\" + DatabaseName + ".dbc")))
+				foreach(string i in Db)
 				{
-					if (i.StartsWith(":::")) //We've got to load an array.
+					if (i.StartsWith(Stringify(0x03))) //We've got to load an array.
 					{
 
-					} else if (i.StartsWith("::")){
-						DatabaseObjects.Add(i.Substring(2), new Dictionary<string,DatabaseObject>());
-						RecentlyMentionedTable = i.Substring(2);
 					}
-					else if(i.StartsWith(":") && RecentlyMentionedTable != "")
+					else if (i.StartsWith(Stringify(0x02)))
+					{
+						DatabaseObjects.Add(i.Substring(1), new Dictionary<string,DatabaseObject>());
+						RecentlyMentionedTable = i.Substring(1);
+					}
+					else if (i.StartsWith(Stringify(0x01)) && RecentlyMentionedTable != "")
 					{
 						//get some values
-						string[] iSplitColon = i.Split(':');
+						string[] iSplitColon = i.Split(Convert.ToChar(0x00));
 
-						if (iSplitColon.Length > 3)
+						if (iSplitColon.Length > 2)
 						{
-							string Identifier = iSplitColon[1];
-							string TypeOf = iSplitColon[2];
+							string Identifier = iSplitColon[0].Substring(1);
+							string TypeOf = iSplitColon[1];
 							string Value = i.Substring(3 + Identifier.Length + TypeOf.Length);
 
 							if (!DatabaseObjects[RecentlyMentionedTable].ContainsKey(Identifier))
@@ -71,13 +75,13 @@ namespace DBCreator
 			{
 				foreach (string i in DatabaseObjects.Keys)
 				{
-					FileLines.Add("::" + i);
+					FileLines.Add(Stringify(0x02) + i);
 
 					if (DatabaseObjects[i].Keys.Count > 0)
 					{
 						foreach (string n in DatabaseObjects[i].Keys)
 						{
-							FileLines.Add(":" + n + ":" + DatabaseObjects[i][n].ToString());
+							FileLines.Add(Stringify(0x01) + n + Stringify(0x00) + DatabaseObjects[i][n].ToString());
 						}
 					}
 				}
@@ -92,6 +96,9 @@ namespace DBCreator
 		/// <param name="table">The name of the table</param>
 		public void CreateTable(string table)
 		{
+			if (table.Contains(Stringify(0x00)))
+				throw new BannedCharecterException("table, " + table);
+
 			if (table.Length == 0)
 				throw new ArgumentException("The table's length cannot be zero.");
 			if (!DatabaseObjects.ContainsKey(table))
@@ -110,9 +117,9 @@ namespace DBCreator
 				if (DatabaseObjects[table].ContainsKey(identifier))
 					return DatabaseObjects[table][identifier].Get();
 				else
-					throw new MissingIdentifier();
+					throw new MissingIdentifierException();
 			else
-				throw new MissingTable();
+				throw new MissingTableException();
 		}
 
 		/// <summary>
@@ -124,13 +131,22 @@ namespace DBCreator
 		/// <returns>The object needed</returns>
 		public object Get(string table, string identifier, Type objectType)
 		{
+			if (table.Contains(Stringify(0x00)))
+				throw new BannedCharecterException("table, " + table);
+
+			if (identifier.Contains(Stringify(0x00)))
+				throw new BannedCharecterException("identifier, " + identifier);
+
+			if (objectType.ToString().Contains(Stringify(0x00)))
+				throw new BannedCharecterException("objectType, " + objectType.ToString());
+
 			if (DatabaseObjects.ContainsKey(table))
 				if (DatabaseObjects[table].ContainsKey(identifier))
 					return DatabaseObjects[table][identifier].Get(objectType);
 				else
-					throw new MissingIdentifier();
+					throw new MissingIdentifierException();
 			else
-				throw new MissingTable();
+				throw new MissingTableException();
 		}
 
 		/// <summary>
@@ -142,13 +158,22 @@ namespace DBCreator
 		/// <returns>The object needed</returns>
 		public object Get(string table, string identifier, string objectType)
 		{
+			if (table.Contains(Stringify(0x00)))
+				throw new BannedCharecterException("table, " + table);
+
+			if (identifier.Contains(Stringify(0x00)))
+				throw new BannedCharecterException("identifier, " + identifier);
+
+			if (objectType.ToString().Contains(Stringify(0x00)))
+				throw new BannedCharecterException("objectType, " + objectType);
+
 			if (DatabaseObjects.ContainsKey(table))
 				if (DatabaseObjects[table].ContainsKey(identifier))
 					return DatabaseObjects[table][identifier].Get(objectType);
 				else
-					throw new MissingIdentifier();
+					throw new MissingIdentifierException();
 			else
-				throw new MissingTable();
+				throw new MissingTableException();
 		}
 
 		/// <summary>
