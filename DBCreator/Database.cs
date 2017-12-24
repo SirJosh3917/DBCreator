@@ -23,11 +23,11 @@ namespace DBCreator
 		{
 			DatabaseN = DatabaseName;
 
-			if(File.Exists(Environment.ExpandEnvironmentVariables("%locallow%\\DBC\\" + DatabaseName + ".dbc")))
+			if(File.Exists(Environment.ExpandEnvironmentVariables("%localappdata%\\DBC\\" + DatabaseName + ".dbc")))
 			{
 				string RecentlyMentionedTable = "";
 
-				string[] Db = File.ReadAllLines(Environment.ExpandEnvironmentVariables("%locallow%\\DBC\\" + DatabaseName + ".dbc"));
+				string[] Db = File.ReadAllLines(Environment.ExpandEnvironmentVariables("%localappdata%\\DBC\\" + DatabaseName + ".dbc"));
 
 				//Load the database
 				foreach(string i in Db)
@@ -94,7 +94,7 @@ namespace DBCreator
 					}
 				}
 
-				File.WriteAllLines(Environment.ExpandEnvironmentVariables("%locallow%\\DBC\\" + DatabaseN + ".dbc"), FileLines.ToArray());
+				File.WriteAllLines(Environment.ExpandEnvironmentVariables("%localappdata%\\DBC\\" + DatabaseN + ".dbc"), FileLines.ToArray());
 			}
 		}
 
